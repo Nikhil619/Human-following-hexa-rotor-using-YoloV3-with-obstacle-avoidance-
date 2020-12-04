@@ -8,6 +8,34 @@ Created on Tue Nov 24 17:38:26 2020
 import cv2
 import numpy as np
 import time
+from dronekit import connect, VehicleMode, LocationGlobalRelative
+from pymavlink import mavutil
+import time
+
+parser=argparse.ArgumentParser()
+parser.add_argument('--connect',default='127.0.0.1:14550')
+args=parser.parse_args()
+vehicle=connect(args.connect, baud=57600,wait_ready=True )
+
+def arm_and_takeoff(aTargetAltitude):
+
+  print "Basic pre-arm checks"
+  # Don't let the user try to arm until autopilot is ready
+  while not vehicle.is_armable:
+    print " Waiting for vehicle to initialise..."
+    time.sleep(1)
+        
+  print "Arming motors"
+  # Copter should arm in GUIDED mode
+  vehicle.mode    = VehicleMode("GUIDED")
+  vehicle.armed   = True
+
+  while not vehicle.armed:
+    print " Waiting for arming..."
+    time.sleep(1)
+
+  print "Taking off!"
+  arm_and_takeoff(1) # Take off to target altitude
 
 
 cap = cv2.VideoCapture(0)
@@ -23,6 +51,8 @@ with open("coco.names", "r") as f:
  classes = [line.strip() for line in f.readlines()]
  
 net = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')           
+
+vehicle.simple_takeoff(aTargetAltitude)
 
 while cv2.waitKey(1) < 0:
     sensor_left = "give the left sensor values here with a delay"
