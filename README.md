@@ -1,5 +1,5 @@
 # Human-following-hexa-rotor-using-YoloV3-with-obstacle-avoidance-
 
-## Implemented YoloV3 in a hexa-rotor to make it follow humans and the hexa-rotor avoids obstacles by turning the desired velocity vector into V_x, V_y and V_z when the sensors or cameras detect any obstacles(using disparity maps). Also the motion of the robot is given by V_x, V_y and V_z    
+## Implemented YoloV3 and StereoVision based obstacle detection in a hexa-rotor to make it follow humans and avoid obstacles by giving the desired velocity vector (V_x, V_y and V_z). The cameras detect obstacles(using disparity maps). The velocity vector is passed to the flight controller   
 ## Download the YoloV3.weights file over here - https://pjreddie.com/darknet/yolo/
 
