@@ -18,6 +18,23 @@ parser.add_argument('--connect',default='127.0.0.1:14550')
 args=parser.parse_args()
 vehicle=connect(args.connect, baud=57600,wait_ready=True )
 
+def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
+    msg = vehicle.message_factory.set_position_target_local_ned_encode(
+        0,       # time_boot_ms (not used)
+        0, 0,    # target system, target component
+        mavutil.mavlink.MAV_FRAME_LOCAL_NED, # frame
+        0b0000111111000111, # type_mask (only speeds enabled)
+        0, 0, 0, # x, y, z positions (not used)
+        velocity_x, velocity_y, velocity_z, # x, y, z velocity in m/s
+        0, 0, 0, # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
+        0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
+
+    # send command to vehicle on 1 Hz cycle
+    for x in range(0,duration):
+        vehicle.send_mavlink(msg)
+        time.sleep(1)
+
+
 def arm_and_takeoff(aTargetAltitude):
 
   print ("Basic pre-arm checks")
@@ -115,38 +132,47 @@ while cv2.waitKey(1) < 0:
                 V_x = 0 #m/s
                 V_y = 0 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             if sensor_right < 50:
                 V_x = 0 #m/s
                 V_y = -0.5 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             if sensor_left < 50:
                 V_x = 0 #m/s
                 V_y = 0.5 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             if ((box[0])+(box[2])/2) > 200 and ((box[1])+(box[3])/2) < 160 and ((box[1])+(box[3])/2) > 80 and (round(box[1]+box[3])) > 180:
                 V_x = 0 #m/s
                 V_y = 0.5 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             elif ((box[0])+(box[2])/2) > 200 and ((box[1])+(box[3])/2) < 160 and ((box[1])+(box[3])/2) > 80 and (round(box[1]+box[3])) < 180:
                 V_x = 0.5 #m/s
                 V_y = 0.5 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             elif ((box[0])+(box[2])/2) < 120 and ((box[1])+(box[3])/2) < 160 and ((box[1])+(box[3])/2) > 80 and (round(box[1]+box[3])) > 180:
                 V_x = 0 #m/s
                 V_y = -0.5 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             elif ((box[0])+(box[2])/2) > 120 and ((box[1])+(box[3])/2) < 160 and ((box[1])+(box[3])/2) > 80 and (round(box[1]+box[3])) < 180:
                 V_x = 0.5 #m/s
                 V_y = -0.5 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             elif (round(box[1]+box[3])) < 180:
                 V_x = 0.4 #m/s
                 V_y = 0 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
             else:
                 V_x = 0 #m/s
                 V_y = 0 #m/s
                 V_z = 0 #m/s
+                send_ned_velocity(V_x, V_y, V_z, 1)
     cv2.imshow("output",frame)
     
     
